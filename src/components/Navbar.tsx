@@ -7,10 +7,13 @@ const Navbar = () => {
   const navItems = [
     { path: "/", label: "Home" },
     { path: "/services", label: "Services" },
+    { path: "/pricing", label: "Pricing" },
     { path: "/about", label: "About Us" },
+    { path: "/faq", label: "FAQ" },
     { path: "/contact", label: "Contact" },
     { path: "/privacy-policy", label: "Privacy Policy" },
     { path: "/terms", label: "Terms of Use" },
+    { path: "/refund-policy", label: "Refund Policy" },
   ];
 
   return (

@@ -74,7 +74,7 @@ const PrivacyPolicy = () => {
               <h2 className="text-2xl font-semibold text-foreground mb-4">5. Data Security</h2>
               <p className="text-muted-foreground mb-4">
                 We implement appropriate security measures to protect your personal information against 
-                unauthorized access, alteration, disclosure, or destruction. However, no method of transmission 
+                unauthorised access, alteration, disclosure, or destruction. However, no method of transmission 
                 over the internet or electronic storage is completely secure.
               </p>
             </section>
@@ -93,11 +93,11 @@ const PrivacyPolicy = () => {
             <section className="mb-8">
               <h2 className="text-2xl font-semibold text-foreground mb-4">7. Contact Us</h2>
               <p className="text-muted-foreground mb-4">
-                If you have any questions about this Privacy Policy, please contact us at:
+                If you have any questions about this Privacy Policy, please get in touch with us at:
               </p>
               <p className="text-muted-foreground">
                 Email: privacy@haryanvideveloper.tech<br />
-                Address: [Your Business Address]
+                Address: 465 Charkhi Dadri, Haryana, India 127306
               </p>
             </section>
 

@@ -122,7 +122,7 @@ const Terms = () => {
               </p>
               <p className="text-muted-foreground">
                 Email: legal@haryanvideveloper.tech<br />
-                Address: [Your Business Address]
+                Address: 4665 Charkhi Dadri Haryana India 127306
               </p>
             </section>
 

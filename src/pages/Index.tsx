@@ -141,7 +141,9 @@ const Index = () => {
             <Link to="/contact">
               <Button size="lg">Contact Us Today</Button>
             </Link>
-            <Button variant="outline" size="lg">Request Demo</Button>
+            <Button variant="outline" size="lg" onClick={() => {
+              window.location.href = '/contact';
+            }}>Request Demo</Button>
           </div>
         </div>
       </section>

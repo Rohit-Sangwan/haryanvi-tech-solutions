@@ -1,7 +1,8 @@
 import Navbar from "@/components/Navbar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Check } from "lucide-react";
+import { Check, Shield, Zap, Clock } from "lucide-react";
+import PaytmPayment from "@/components/PaytmPayment";
 
 const Pricing = () => {
   const plans = [
@@ -69,9 +70,25 @@ const Pricing = () => {
       <div className="container mx-auto px-4 py-12">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-foreground mb-4">Pricing Plans</h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
             Choose the perfect plan for your business needs. All plans include our commitment to quality and security.
           </p>
+          
+          {/* Trust Indicators */}
+          <div className="flex justify-center items-center gap-8 mb-8 flex-wrap">
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Shield className="w-5 h-5 text-green-600" />
+              <span className="text-sm">Secure Payments</span>
+            </div>
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Zap className="w-5 h-5 text-blue-600" />
+              <span className="text-sm">Instant Activation</span>
+            </div>
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Clock className="w-5 h-5 text-purple-600" />
+              <span className="text-sm">24/7 Support</span>
+            </div>
+          </div>
         </div>
 
         <div className="grid md:grid-cols-3 gap-8 mb-16">
@@ -104,8 +121,13 @@ const Pricing = () => {
                 <Button 
                   className="w-full" 
                   variant={plan.popular ? "default" : "outline"}
+                  onClick={() => {
+                    // Paytm Payment Gateway Integration Placeholder
+                    // This will be replaced with actual Paytm integration after approval
+                    alert(`Paytm Payment Gateway will be integrated here for ${plan.name} plan (${plan.price}). Currently pending Paytm approval.`);
+                  }}
                 >
-                  Get Started
+                  Pay with Paytm - {plan.price}
                 </Button>
               </CardContent>
             </Card>
@@ -140,8 +162,12 @@ const Pricing = () => {
             Every business is unique. Contact us for a personalized quote based on your specific requirements.
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
-            <Button size="lg">Request Custom Quote</Button>
-            <Button variant="outline" size="lg">Schedule Consultation</Button>
+            <Button size="lg" onClick={() => {
+              window.location.href = '/contact';
+            }}>Request Custom Quote</Button>
+            <Button variant="outline" size="lg" onClick={() => {
+              window.location.href = '/contact';
+            }}>Schedule Consultation</Button>
           </div>
         </div>
       </div>

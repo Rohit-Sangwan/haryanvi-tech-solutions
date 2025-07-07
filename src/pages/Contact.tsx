@@ -29,7 +29,11 @@ const Contact = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <form className="space-y-6">
+                  <form className="space-y-6" onSubmit={(e) => {
+                    e.preventDefault();
+                    // Form submission logic will be implemented here
+                    alert('Thank you for your message! We will get back to you soon.');
+                  }}>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <Label htmlFor="firstName">First Name</Label>

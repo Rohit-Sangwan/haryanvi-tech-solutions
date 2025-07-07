@@ -1,4 +1,5 @@
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 const FAQ = () => {
@@ -95,6 +96,8 @@ const FAQ = () => {
           </div>
         </div>
       </div>
+
+      <Footer />
     </div>
   );
 };

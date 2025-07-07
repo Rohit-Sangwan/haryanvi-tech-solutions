@@ -1,4 +1,5 @@
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 const Services = () => {
@@ -63,6 +64,8 @@ const Services = () => {
           </button>
         </div>
       </div>
+
+      <Footer />
     </div>
   );
 };

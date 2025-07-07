@@ -1,4 +1,5 @@
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 const About = () => {
@@ -105,6 +106,8 @@ const About = () => {
           </div>
         </div>
       </div>
+
+      <Footer />
     </div>
   );
 };

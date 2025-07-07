@@ -1,4 +1,6 @@
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import AdditionalServices from "@/components/AdditionalServices";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check, Shield, Zap, Clock } from "lucide-react";
@@ -135,25 +137,7 @@ const Pricing = () => {
         </div>
 
         <div className="mb-12">
-          <h2 className="text-3xl font-bold text-foreground text-center mb-8">Additional Services</h2>
-          <div className="max-w-2xl mx-auto">
-            <Card>
-              <CardHeader>
-                <CardTitle>Add-On Services</CardTitle>
-                <CardDescription>Enhance your project with these additional services</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {additionalServices.map((service, index) => (
-                    <div key={index} className="flex justify-between items-center py-2 border-b border-border last:border-b-0">
-                      <span className="text-foreground">{service.name}</span>
-                      <span className="text-primary font-semibold">{service.price}</span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          <AdditionalServices />
         </div>
 
         <div className="text-center bg-muted/30 rounded-lg p-8">
@@ -170,6 +154,8 @@ const Pricing = () => {
             }}>Schedule Consultation</Button>
           </div>
         </div>
+
+        <Footer />
       </div>
     </div>
   );

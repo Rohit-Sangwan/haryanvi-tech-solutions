@@ -1,4 +1,5 @@
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 const RefundPolicy = () => {
   return (
@@ -90,6 +91,8 @@ const RefundPolicy = () => {
           </div>
         </div>
       </div>
+
+      <Footer />
     </div>
   );
 };

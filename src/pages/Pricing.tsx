@@ -1,68 +1,72 @@
+import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AdditionalServices from "@/components/AdditionalServices";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check, Shield, Zap, Clock } from "lucide-react";
-import PaytmPayment from "@/components/PaytmPayment";
 
 const Pricing = () => {
-  const plans = [
+  const navigate = useNavigate();
+  
+  const pricingPlans = [
     {
       name: "Starter",
-      price: "₹299",
-      period: "per project",
+      price: "₹4,999",
+      period: "/project",
       description: "Perfect for small businesses and startups",
       features: [
-        "Basic API Integration",
-        "Simple Dashboard Setup",
+        "Custom API Development",
+        "Basic Dashboard",
         "Email Support",
-        "30-day Support Period",
-        "Basic Documentation"
+        "1 Month Free Support",
+        "Basic Documentation",
+        "Source Code Included"
       ],
-      popular: false
+      popular: false,
+      cta: "Get Started",
+      originalPrice: 4999
     },
     {
-      name: "Professional",
-      price: "₹799",
-      period: "per project",
-      description: "Most popular for growing businesses",
+      name: "Professional", 
+      price: "₹9,999",
+      period: "/project",
+      description: "Ideal for growing businesses with advanced needs",
       features: [
-        "Custom API Development",
-        "Advanced Dashboard with Analytics",
+        "Advanced API Development",
+        "Interactive Dashboard",
         "Priority Support",
-        "90-day Support Period",
+        "3 Months Free Support",
         "Complete Documentation",
-        "Source Code Included",
-        "Basic Training Session"
+        "Source Code + Deployment",
+        "Database Integration",
+        "Third-party Integrations"
       ],
-      popular: true
+      popular: true,
+      cta: "Choose Professional",
+      originalPrice: 9999
     },
     {
       name: "Enterprise",
-      price: "₹1,999",
-      period: "per project",
-      description: "For large-scale implementations",
+      price: "₹19,999",
+      period: "/project",
+      description: "Comprehensive solution for large organizations",
       features: [
         "Full-Stack Development",
-        "Multi-platform Integration",
-        "24/7 Priority Support",
-        "1-year Support Period",
-        "Comprehensive Documentation",
-        "Full Source Code & Rights",
-        "Dedicated Training Sessions",
-        "Ongoing Maintenance Options"
+        "Advanced Analytics Dashboard",
+        "24/7 Premium Support",
+        "6 Months Free Support",
+        "Technical Documentation",
+        "Complete Deployment Setup",
+        "Custom Integrations",
+        "Security Implementation",
+        "Performance Optimization",
+        "Training Sessions"
       ],
-      popular: false
+      popular: false,
+      cta: "Contact Sales",
+      originalPrice: 19999
     }
-  ];
-
-  const additionalServices = [
-    { name: "Additional API Endpoint", price: "$50" },
-    { name: "Custom Report Design", price: "$150" },
-    { name: "Extended Support (per month)", price: "$99" },
-    { name: "Training Session (per hour)", price: "$75" },
-    { name: "Maintenance Package (monthly)", price: "$199" }
   ];
 
   return (
@@ -93,9 +97,9 @@ const Pricing = () => {
           </div>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8 mb-16">
-          {plans.map((plan, index) => (
-            <Card key={index} className={`relative ${plan.popular ? 'border-primary ring-2 ring-primary/20' : ''}`}>
+        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto mb-16">
+          {pricingPlans.map((plan, index) => (
+            <Card key={index} className={`relative ${plan.popular ? 'border-primary shadow-lg scale-105' : ''}`}>
               {plan.popular && (
                 <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                   <span className="bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-medium">
@@ -104,10 +108,10 @@ const Pricing = () => {
                 </div>
               )}
               <CardHeader className="text-center">
-                <CardTitle className="text-2xl">{plan.name}</CardTitle>
+                <CardTitle className="text-xl">{plan.name}</CardTitle>
                 <div className="mt-4">
-                  <span className="text-4xl font-bold text-primary">{plan.price}</span>
-                  <span className="text-muted-foreground ml-2">{plan.period}</span>
+                  <span className="text-3xl font-bold text-primary">{plan.price}</span>
+                  <span className="text-muted-foreground">{plan.period}</span>
                 </div>
                 <CardDescription className="mt-2">{plan.description}</CardDescription>
               </CardHeader>
@@ -123,13 +127,17 @@ const Pricing = () => {
                 <Button 
                   className="w-full" 
                   variant={plan.popular ? "default" : "outline"}
-                  onClick={() => {
-                    // Paytm Payment Gateway Integration Placeholder
-                    // This will be replaced with actual Paytm integration after approval
-                    alert(`Paytm Payment Gateway will be integrated here for ${plan.name} plan (${plan.price}). Currently pending Paytm approval.`);
-                  }}
+                  onClick={() => navigate('/checkout', { 
+                    state: { 
+                      product: { 
+                        name: plan.name, 
+                        price: plan.originalPrice, 
+                        features: plan.features 
+                      } 
+                    } 
+                  })}
                 >
-                  Pay with Paytm - {plan.price}
+                  {plan.cta}
                 </Button>
               </CardContent>
             </Card>
@@ -146,17 +154,17 @@ const Pricing = () => {
             Every business is unique. Contact us for a personalized quote based on your specific requirements.
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
-            <Button size="lg" onClick={() => {
-              window.location.href = '/contact';
-            }}>Request Custom Quote</Button>
-            <Button variant="outline" size="lg" onClick={() => {
-              window.location.href = '/contact';
-            }}>Schedule Consultation</Button>
+            <Button size="lg" onClick={() => navigate('/contact')}>
+              Request Custom Quote
+            </Button>
+            <Button variant="outline" size="lg" onClick={() => navigate('/contact')}>
+              Schedule Consultation
+            </Button>
           </div>
         </div>
-
-        <Footer />
       </div>
+
+      <Footer />
     </div>
   );
 };

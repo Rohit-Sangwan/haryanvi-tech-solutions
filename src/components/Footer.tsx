@@ -51,11 +51,11 @@ const Footer = () => {
               </div>
               <div className="flex items-center gap-3 text-muted-foreground">
                 <Phone className="w-4 h-4" />
-                <span>+91 9876543210</span>
+                <span>+918278283080</span>
               </div>
               <div className="flex items-center gap-3 text-muted-foreground">
                 <MapPin className="w-4 h-4" />
-                <span>Haryana, India</span>
+                <span>465 V.P.O. MANDOLA CHARKHI DADRI HARYANA INDIA 127306</span>
               </div>
             </div>
 

@@ -123,7 +123,7 @@ const Terms = () => {
               </p>
               <p className="text-muted-foreground">
                 Email: legal@haryanvideveloper.tech<br />
-                Address: 4665 Charkhi Dadri Haryana India 127306
+                Address: 465 V.P.O. MANDOLA CHARKHI DADRI HARYANA INDIA 127306
               </p>
             </section>
 

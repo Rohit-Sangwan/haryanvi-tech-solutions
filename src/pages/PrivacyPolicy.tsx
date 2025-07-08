@@ -98,7 +98,7 @@ const PrivacyPolicy = () => {
               </p>
               <p className="text-muted-foreground">
                 Email: privacy@haryanvideveloper.tech<br />
-                Address: 465 Charkhi Dadri, Haryana, India 127306
+                Address: 465 V.P.O. MANDOLA CHARKHI DADRI HARYANA INDIA 127306
               </p>
             </section>
 

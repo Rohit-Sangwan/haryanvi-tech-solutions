@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import AdditionalServices from "@/components/AdditionalServices";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check, Shield, Zap, Clock } from "lucide-react";
@@ -144,9 +143,6 @@ const Pricing = () => {
           ))}
         </div>
 
-        <div className="mb-12">
-          <AdditionalServices />
-        </div>
 
         <div className="text-center bg-muted/30 rounded-lg p-8">
           <h2 className="text-2xl font-semibold mb-4">Need a Custom Solution?</h2>

@@ -20,14 +20,14 @@ const Index = () => {
             We specialize in creating reliable, efficient, and user-friendly technology solutions.
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
-            <Link to="/services">
+            <Link to="/marketplace">
               <Button size="lg" className="px-8">
-                Our Services
+                Browse Marketplace
               </Button>
             </Link>
-            <Link to="/contact">
+            <Link to="/services">
               <Button variant="outline" size="lg" className="px-8">
-                Get Quote
+                Our Services
               </Button>
             </Link>
           </div>

@@ -12,31 +12,64 @@ const RazorpayPayment = ({ amount, productName, onSuccess, onError }: RazorpayPa
   const { toast } = useToast();
 
   const handlePayment = () => {
-    // Demo payment - In production, this would integrate with Razorpay
-    toast({
-      title: "Payment Processing",
-      description: `Processing payment of ₹${amount} for ${productName} via Razorpay...`,
-    });
-
-    // Simulate payment processing
-    setTimeout(() => {
-      const success = Math.random() > 0.1; // 90% success rate for demo
-      
-      if (success) {
+    // Live Razorpay Integration
+    const options = {
+      key: "rzp_live_YOUR_KEY_HERE", // Replace with your live Razorpay key
+      amount: amount * 100, // Razorpay expects amount in paise
+      currency: "INR",
+      name: "Source Code Marketplace",
+      description: productName,
+      image: "/favicon.ico",
+      order_id: "", // This should be generated from your backend
+      handler: function (response: any) {
+        // Payment successful
         toast({
           title: "Payment Successful!",
-          description: `Payment of ₹${amount} completed successfully via Razorpay`,
+          description: `Payment of ₹${amount} completed successfully`,
         });
         onSuccess?.();
-      } else {
+      },
+      prefill: {
+        name: "",
+        email: "",
+        contact: ""
+      },
+      theme: {
+        color: "#3399cc"
+      },
+      modal: {
+        ondismiss: function() {
+          toast({
+            title: "Payment Cancelled",
+            description: "Payment was cancelled by user",
+            variant: "destructive",
+          });
+          onError?.("Payment cancelled");
+        }
+      }
+    };
+
+    // Load Razorpay script if not already loaded
+    if (!(window as any).Razorpay) {
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.onload = () => {
+        const razorpay = new (window as any).Razorpay(options);
+        razorpay.open();
+      };
+      script.onerror = () => {
         toast({
-          title: "Payment Failed",
-          description: "Payment failed. Please try again.",
+          title: "Error",
+          description: "Failed to load payment gateway",
           variant: "destructive",
         });
-        onError?.("Payment failed");
-      }
-    }, 2000);
+        onError?.("Failed to load payment gateway");
+      };
+      document.body.appendChild(script);
+    } else {
+      const razorpay = new (window as any).Razorpay(options);
+      razorpay.open();
+    }
   };
 
   return (

@@ -23,7 +23,7 @@ const About = () => {
               </CardHeader>
               <CardContent className="text-muted-foreground leading-relaxed">
                 <p className="mb-4">
-                  Haryanvi Developer is a secure IT tools company specializing in developing reliable, 
+                  Rohit Sangwan, Founder and CEO of Haryanvi Developer, is a secure IT tools company specializing in developing reliable, 
                   efficient, and user-friendly software solutions for businesses and individual developers. 
                   We are committed to delivering high-quality products that enhance productivity and 
                   streamline operations.

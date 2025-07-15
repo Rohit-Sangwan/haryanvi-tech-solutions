@@ -3,7 +3,8 @@ import React from "react";
 export const OrganizationSchema = () => {
   const schemaData = {
     "@context": "https://schema.org",
-    "@type": "SoftwareCompany",
+    "@type": "Organization",
+    "additionalType": "https://schema.org",
     "name": "HARYANVI DEVELOPER",
     "alternateName": "HaryanviDeveloper",
     "url": "https://haryanvideveloper.tech",
@@ -17,7 +18,7 @@ export const OrganizationSchema = () => {
       "@type": "Person",
       "name": "Rohit Sangwan",
       "jobTitle": "Founder & Developer",
-      "sameAs": "https://www.instagram.com/haryanvihacker"
+      "sameAs": "https://www.instagram.com/haryanvideveloper"
     },
     "sameAs": [
       "https://github.com/haryanvideveloper",
@@ -54,7 +55,7 @@ export const OrganizationSchema = () => {
         "description": "Advanced phone/email lookup and leak detection tool."
       }
     },
-    "award": "Featured as Top OSINT Tool on  GitHub in 2025"
+    "award": "Featured as Top OSINT Tool on GitHub in 2024"
   };
 
   return (

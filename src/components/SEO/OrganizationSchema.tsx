@@ -54,7 +54,7 @@ export const OrganizationSchema = () => {
         "description": "Advanced phone/email lookup and leak detection tool."
       }
     },
-    "award": "Featured as Top OSINT Tool on GitHub in 2025"
+    "award": "Featured as Top OSINT Tool on  GitHub in 2025"
   };
 
   return (

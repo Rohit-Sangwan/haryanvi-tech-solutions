@@ -18,6 +18,8 @@ import Checkout from "./pages/Checkout";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 
+import { OrganizationSchema } from "@/components/SEO/OrganizationSchema";
+
 const queryClient = new QueryClient();
 
 const App = () => (

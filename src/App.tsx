@@ -23,7 +23,8 @@ import { OrganizationSchema } from "@/components/SEO/OrganizationSchema";
 const queryClient = new QueryClient();
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
+  <OrganizationSchema /> {/* ✅ Add this line at the root */}
+    <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />

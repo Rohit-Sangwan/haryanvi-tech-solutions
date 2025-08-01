@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -7,109 +7,80 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Code, Download, Star, Eye, ShoppingCart } from "lucide-react";
+import { Search, Code, Download, Star, Eye, ShoppingCart, RefreshCw } from "lucide-react";
 import { useCart } from "@/components/CartContext";
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Product {
-  id: number;
+  id: string;
   title: string;
   description: string;
   category: string;
   price: number;
-  originalPrice?: number;
+  original_price?: number;
   rating: number;
   downloads: number;
   technologies: string[];
-  preview: string;
   features: string[];
-  demoUrl?: string;
+  status: string;
+  image_url?: string;
+  created_at: string;
 }
 
 const Marketplace = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const { addToCart } = useCart();
   const { toast } = useToast();
 
-  const products: Product[] = [
-    {
-      id: 1,
-      title: "React E-commerce Dashboard",
-      description: "Complete admin dashboard with analytics, user management, and product catalog",
-      category: "react-apps",
-      price: 2999,
-      originalPrice: 4999,
-      rating: 4.8,
-      downloads: 245,
-      technologies: ["React", "TypeScript", "Tailwind CSS", "Chart.js"],
-      preview: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6",
-      features: ["Admin Dashboard", "User Management", "Analytics", "Responsive Design"],
-      demoUrl: "https://demo.example.com"
-    },
-    {
-      id: 2,
-      title: "Node.js REST API Boilerplate",
-      description: "Production-ready Node.js API with authentication, validation, and documentation",
-      category: "backend",
-      price: 1999,
-      rating: 4.9,
-      downloads: 189,
-      technologies: ["Node.js", "Express", "MongoDB", "JWT"],
-      preview: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7",
-      features: ["JWT Authentication", "API Documentation", "Error Handling", "Rate Limiting"]
-    },
-    {
-      id: 3,
-      title: "React Component Library",
-      description: "50+ reusable React components with Storybook documentation",
-      category: "components",
-      price: 1499,
-      rating: 4.7,
-      downloads: 312,
-      technologies: ["React", "TypeScript", "Storybook", "CSS Modules"],
-      preview: "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
-      features: ["50+ Components", "TypeScript Support", "Storybook Docs", "Theme Support"]
-    },
-    {
-      id: 4,
-      title: "Vue.js SaaS Template",
-      description: "Complete SaaS application template with billing and user management",
-      category: "vue-apps",
-      price: 3499,
-      originalPrice: 5999,
-      rating: 4.6,
-      downloads: 128,
-      technologies: ["Vue.js", "Nuxt.js", "Vuetify", "Stripe"],
-      preview: "https://images.unsplash.com/photo-1531297484001-80022131f5a1",
-      features: ["SaaS Template", "Billing Integration", "User Auth", "Admin Panel"]
-    },
-    {
-      id: 5,
-      title: "Python Web Scraper Kit",
-      description: "Advanced web scraping tools with proxy support and data export",
-      category: "python",
-      price: 999,
-      rating: 4.5,
-      downloads: 167,
-      technologies: ["Python", "Scrapy", "BeautifulSoup", "Pandas"],
-      preview: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5",
-      features: ["Proxy Support", "Data Export", "Multi-threading", "Error Handling"]
-    },
-    {
-      id: 6,
-      title: "Mobile App UI Kit",
-      description: "Complete React Native UI kit with 100+ screens and components",
-      category: "mobile",
-      price: 2499,
-      rating: 4.8,
-      downloads: 201,
-      technologies: ["React Native", "Expo", "TypeScript", "Styled Components"],
-      preview: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158",
-      features: ["100+ Screens", "Dark Mode", "Animations", "Cross Platform"]
+  useEffect(() => {
+    fetchProducts();
+    setupRealtimeSubscription();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('status', 'active')
+        .order('downloads', { ascending: false });
+
+      if (error) throw error;
+      setProducts(data || []);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load products",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  const setupRealtimeSubscription = () => {
+    const channel = supabase
+      .channel('products-marketplace')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'products' },
+        () => {
+          fetchProducts();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  };
 
   const categories = [
     { value: "all", label: "All Categories" },
@@ -123,7 +94,8 @@ const Marketplace = () => {
 
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         product.description.toLowerCase().includes(searchTerm.toLowerCase());
+                         product.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         product.technologies.some(tech => tech.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesCategory = selectedCategory === "all" || product.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
@@ -133,7 +105,9 @@ const Marketplace = () => {
       id: product.id,
       title: product.title,
       price: product.price,
-      features: product.features
+      originalPrice: product.original_price,
+      image: product.image_url || "/placeholder.svg",
+      category: product.category
     });
     toast({
       title: "Added to Cart",
@@ -145,6 +119,7 @@ const Marketplace = () => {
     navigate('/checkout', {
       state: {
         product: {
+          id: product.id,
           name: product.title,
           price: product.price,
           features: product.features
@@ -152,6 +127,20 @@ const Marketplace = () => {
       }
     });
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="flex items-center justify-center py-16">
+          <div className="flex items-center gap-2">
+            <RefreshCw className="w-4 h-4 animate-spin" />
+            <span>Loading marketplace...</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -201,6 +190,10 @@ const Marketplace = () => {
             <h2 className="text-2xl font-bold">
               {filteredProducts.length} Products Found
             </h2>
+            <Button variant="outline" size="sm" onClick={fetchProducts}>
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Refresh
+            </Button>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -208,13 +201,13 @@ const Marketplace = () => {
               <Card key={product.id} className="h-full hover:shadow-lg transition-all duration-300 hover-scale">
                 <div className="relative">
                   <img
-                    src={product.preview}
+                    src={product.image_url || "/placeholder.svg"}
                     alt={product.title}
                     className="w-full h-48 object-cover rounded-t-lg"
                   />
-                  {product.originalPrice && (
+                  {product.original_price && (
                     <Badge className="absolute top-2 left-2 bg-red-500">
-                      Save ₹{product.originalPrice - product.price}
+                      Save ₹{product.original_price - product.price}
                     </Badge>
                   )}
                 </div>
@@ -263,12 +256,9 @@ const Marketplace = () => {
                       <Download className="w-4 h-4" />
                       {product.downloads} downloads
                     </span>
-                    {product.demoUrl && (
-                      <span className="flex items-center gap-1">
-                        <Eye className="w-4 h-4" />
-                        Live Demo
-                      </span>
-                    )}
+                    <span className="text-xs">
+                      Added {new Date(product.created_at).toLocaleDateString()}
+                    </span>
                   </div>
 
                   {/* Price and Actions */}
@@ -278,9 +268,9 @@ const Marketplace = () => {
                         <span className="text-2xl font-bold text-primary">
                           ₹{product.price}
                         </span>
-                        {product.originalPrice && (
+                        {product.original_price && (
                           <span className="text-sm text-muted-foreground line-through ml-2">
-                            ₹{product.originalPrice}
+                            ₹{product.original_price}
                           </span>
                         )}
                       </div>
@@ -307,7 +297,7 @@ const Marketplace = () => {
             ))}
           </div>
 
-          {filteredProducts.length === 0 && (
+          {filteredProducts.length === 0 && !loading && (
             <div className="text-center py-16">
               <Code className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-xl font-semibold mb-2">No products found</h3>

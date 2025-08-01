@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import { Lock, User } from "lucide-react";
 
 const AdminLogin = () => {
@@ -17,18 +18,36 @@ const AdminLogin = () => {
     e.preventDefault();
     setLoading(true);
 
-    // Demo credentials - in production, use proper authentication
-    if (credentials.username === "admin" && credentials.password === "admin123") {
-      localStorage.setItem("adminToken", "admin-logged-in");
-      toast({
-        title: "Login Successful",
-        description: "Welcome to the admin dashboard",
+    try {
+      const { data, error } = await supabase.functions.invoke('admin-auth', {
+        body: { 
+          email: credentials.username, 
+          password: credentials.password 
+        }
       });
-      navigate("/admin/dashboard");
-    } else {
+
+      if (error) throw error;
+
+      if (data.success) {
+        localStorage.setItem("adminToken", data.token);
+        localStorage.setItem("adminUser", JSON.stringify(data.user));
+        toast({
+          title: "Login Successful",
+          description: "Welcome to the admin dashboard",
+        });
+        navigate("/admin/dashboard");
+      } else {
+        toast({
+          title: "Login Failed",
+          description: data.error || "Invalid credentials",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Login error:', error);
       toast({
         title: "Login Failed",
-        description: "Invalid credentials. Try admin/admin123",
+        description: "An error occurred during login. Please try again.",
         variant: "destructive",
       });
     }
@@ -48,13 +67,13 @@ const AdminLogin = () => {
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="username">Email</Label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
                   id="username"
-                  type="text"
-                  placeholder="Enter username"
+                  type="email"
+                  placeholder="admin@haryanvideveloper.com"
                   value={credentials.username}
                   onChange={(e) => setCredentials(prev => ({ ...prev, username: e.target.value }))}
                   className="pl-10"
@@ -85,7 +104,7 @@ const AdminLogin = () => {
           </form>
           
           <div className="mt-4 text-center text-sm text-muted-foreground">
-            Demo credentials: admin / admin123
+            Demo credentials: admin@haryanvideveloper.com / admin123
           </div>
         </CardContent>
       </Card>

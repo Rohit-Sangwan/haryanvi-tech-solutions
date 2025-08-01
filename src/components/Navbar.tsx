@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Phone, Mail } from "lucide-react";
 import { useState } from "react";
+import { CartDialog } from "@/components/CartDialog";
 
 const Navbar = () => {
   const location = useLocation();
@@ -86,6 +87,7 @@ const Navbar = () => {
 
             {/* CTA Button */}
             <div className="hidden md:flex items-center gap-4">
+              <CartDialog />
               <Link to="/contact">
                 <Button size="sm" className="px-6">
                   Get Quote

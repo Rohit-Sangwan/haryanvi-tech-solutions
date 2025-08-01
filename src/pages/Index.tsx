@@ -142,9 +142,9 @@ const Index = () => {
             <Link to="/contact">
               <Button size="lg">Contact Us Today</Button>
             </Link>
-            <Button variant="outline" size="lg" onClick={() => {
-              window.location.href = '/contact';
-            }}>Request Demo</Button>
+            <Link to="/pricing">
+              <Button variant="outline" size="lg">View Pricing</Button>
+            </Link>
           </div>
         </div>
       </section>

@@ -10,11 +10,13 @@ import { Separator } from "@/components/ui/separator";
 import PaytmPayment from "@/components/PaytmPayment";
 import RazorpayPayment from "@/components/RazorpayPayment";
 import { useToast } from "@/components/ui/use-toast";
+import { useCart } from "@/components/CartContext";
 
 const Checkout = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { clearCart } = useCart();
   const [selectedPayment, setSelectedPayment] = useState<"paytm" | "razorpay">("razorpay");
   
   // Get product details from navigation state
@@ -38,11 +40,15 @@ const Checkout = () => {
   };
 
   const handlePaymentSuccess = () => {
+    clearCart(); // Clear the cart after successful payment
     toast({
       title: "Order Confirmed!",
       description: "Thank you for your purchase. You will receive a confirmation email shortly.",
     });
-    navigate("/");
+    // Redirect to a success page or back to marketplace
+    setTimeout(() => {
+      navigate("/marketplace");
+    }, 2000);
   };
 
   const handlePaymentError = (error: any) => {

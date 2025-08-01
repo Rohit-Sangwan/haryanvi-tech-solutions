@@ -14,7 +14,7 @@ const RazorpayPayment = ({ amount, productName, onSuccess, onError }: RazorpayPa
   const handlePayment = () => {
     // Live Razorpay Integration
     const options = {
-      key: "rzp_live_7cQdAYcNQ4176q", // Replace with your live Razorpay key
+      key: "rzp_live_YOUR_KEY_HERE", // Replace with your actual live Razorpay key
       amount: amount * 100, // Razorpay expects amount in paise
       currency: "INR",
       name: "Source Code Marketplace",

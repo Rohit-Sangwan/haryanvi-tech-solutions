@@ -8,6 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, Code, Download, Star, Eye, ShoppingCart } from "lucide-react";
+import { useCart } from "@/components/CartContext";
+import { useToast } from "@/components/ui/use-toast";
 
 interface Product {
   id: number;
@@ -28,7 +30,8 @@ const Marketplace = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [cart, setCart] = useState<Product[]>([]);
+  const { addToCart } = useCart();
+  const { toast } = useToast();
 
   const products: Product[] = [
     {
@@ -125,8 +128,17 @@ const Marketplace = () => {
     return matchesSearch && matchesCategory;
   });
 
-  const addToCart = (product: Product) => {
-    setCart(prev => [...prev, product]);
+  const handleAddToCart = (product: Product) => {
+    addToCart({
+      id: product.id,
+      title: product.title,
+      price: product.price,
+      features: product.features
+    });
+    toast({
+      title: "Added to Cart",
+      description: `${product.title} has been added to your cart`,
+    });
   };
 
   const goToCheckout = (product: Product) => {
@@ -189,12 +201,6 @@ const Marketplace = () => {
             <h2 className="text-2xl font-bold">
               {filteredProducts.length} Products Found
             </h2>
-            {cart.length > 0 && (
-              <Button variant="outline" className="flex items-center gap-2">
-                <ShoppingCart className="w-4 h-4" />
-                Cart ({cart.length})
-              </Button>
-            )}
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -289,7 +295,7 @@ const Marketplace = () => {
                       </Button>
                       <Button
                         variant="outline"
-                        onClick={() => addToCart(product)}
+                        onClick={() => handleAddToCart(product)}
                         className="px-3"
                       >
                         <ShoppingCart className="w-4 h-4" />

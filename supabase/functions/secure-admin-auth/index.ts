@@ -18,7 +18,13 @@ serve(async (req) => {
   try {
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false
+        }
+      }
     );
 
     const { email, password } = await req.json();
@@ -33,14 +39,17 @@ serve(async (req) => {
       );
     }
 
-    // Fetch admin user from database
+    // Fetch admin user from database using service role to bypass RLS
     const { data: adminUser, error: fetchError } = await supabase
       .from('admin_users')
       .select('*')
       .eq('email', email)
-      .single();
+      .maybeSingle();
+
+    console.log('Admin user lookup:', { email, found: !!adminUser, error: fetchError });
 
     if (fetchError || !adminUser) {
+      console.log('Admin user not found or error:', fetchError);
       return new Response(
         JSON.stringify({ error: 'Invalid credentials' }),
         { 

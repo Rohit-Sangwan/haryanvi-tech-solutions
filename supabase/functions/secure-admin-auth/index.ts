@@ -62,28 +62,36 @@ serve(async (req) => {
     // Verify password
     let passwordValid = false;
     
-    // Check if user has new hashed password
-    if (adminUser.password_salt && adminUser.password_iterations) {
-      // Use bcrypt for new secure passwords
-      passwordValid = await bcrypt.compare(password, adminUser.password_hash);
-    } else {
-      // Temporary compatibility with old plaintext passwords (remove in production)
-      passwordValid = password === adminUser.password_hash;
-      
-      // If login successful with old password, upgrade to hashed password
-      if (passwordValid) {
-        const salt = await bcrypt.genSalt(12);
-        const hashedPassword = await bcrypt.hash(password, salt);
+    try {
+      // Check if user has bcrypt hashed password
+      if (adminUser.password_hash && adminUser.password_hash.startsWith('$2b$')) {
+        // Use bcrypt for secure passwords
+        passwordValid = await bcrypt.compare(password, adminUser.password_hash);
+        console.log('Password verification with bcrypt:', passwordValid);
+      } else {
+        // Temporary compatibility with old plaintext passwords
+        passwordValid = password === adminUser.password_hash;
+        console.log('Password verification with plaintext:', passwordValid);
         
-        await supabase
-          .from('admin_users')
-          .update({ 
-            password_hash: hashedPassword,
-            password_salt: salt,
-            password_iterations: 12
-          })
-          .eq('id', adminUser.id);
+        // If login successful with old password, upgrade to hashed password
+        if (passwordValid) {
+          const hashedPassword = await bcrypt.hash(password, 12);
+          
+          await supabase
+            .from('admin_users')
+            .update({ 
+              password_hash: hashedPassword,
+              password_iterations: 12,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', adminUser.id);
+          
+          console.log('Password upgraded to bcrypt hash');
+        }
       }
+    } catch (error) {
+      console.error('Password verification error:', error);
+      passwordValid = false;
     }
 
     if (!passwordValid) {

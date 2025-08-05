@@ -38,6 +38,7 @@ const Downloads = () => {
   const [email, setEmail] = useState("");
   const [purchases, setPurchases] = useState<Purchase[]>([]);
   const [loading, setLoading] = useState(false);
+  const [downloadLoading, setDownloadLoading] = useState<string | null>(null);
   const [searchAttempted, setSearchAttempted] = useState(false);
   const { toast } = useToast();
 
@@ -107,41 +108,58 @@ const Downloads = () => {
   };
 
   const handleDownload = async (purchase: Purchase) => {
-    if (!purchase.product?.download_url) {
+    if (!purchase.product_id) {
       toast({
         title: "Download Not Available",
-        description: "Download link is not available for this item",
+        description: "Product information is missing",
         variant: "destructive",
       });
       return;
     }
 
     try {
-      // Log the download (in real implementation, update user_purchases table)
-      console.log('Download initiated for order:', purchase.id);
+      setDownloadLoading(purchase.id);
+      
+      // Generate secure download token
+      const { data: tokenData, error: tokenError } = await supabase
+        .rpc('generate_download_token', {
+          p_user_email: email.toLowerCase(),
+          p_product_id: purchase.product_id
+        });
 
-      // Create a temporary link to download the file
-      const link = document.createElement('a');
-      link.href = purchase.product!.download_url!;
-      link.download = `${purchase.product?.title || 'source-code'}.zip`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      if (tokenError) {
+        throw new Error('Failed to generate download token');
+      }
 
+      // Get secure download URL
+      const { data: downloadData, error: downloadError } = await supabase.functions
+        .invoke('secure-download', {
+          body: {
+            token: tokenData,
+            user_email: email.toLowerCase()
+          }
+        });
+
+      if (downloadError || !downloadData.success) {
+        throw new Error(downloadData?.error || 'Failed to get download link');
+      }
+
+      // Open download in new tab
+      window.open(downloadData.download_url, '_blank');
+      
       toast({
         title: "Download Started",
-        description: "Your source code download has started",
+        description: `${purchase.product?.title} download has begun. Link expires in 1 hour.`,
       });
-
-      // Refresh the purchases to update download count
-      searchPurchases();
     } catch (error) {
-      console.error('Error downloading file:', error);
+      console.error('Download error:', error);
       toast({
         title: "Download Failed",
-        description: "Failed to download the file. Please try again.",
+        description: error instanceof Error ? error.message : "Unable to download file",
         variant: "destructive",
       });
+    } finally {
+      setDownloadLoading(null);
     }
   };
 
@@ -266,10 +284,10 @@ const Downloads = () => {
                       <Button
                         onClick={() => handleDownload(purchase)}
                         className="w-full"
-                        disabled={!purchase.product?.download_url}
+                        disabled={downloadLoading === purchase.id}
                       >
                         <Download className="w-4 h-4 mr-2" />
-                        Download Source Code
+                        {downloadLoading === purchase.id ? "Generating Link..." : "Download Source Code"}
                       </Button>
                     </CardContent>
                   </Card>

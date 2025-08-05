@@ -1,0 +1,141 @@
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { create, verify } from "https://deno.land/x/djwt@v2.8/mod.ts";
+import * as bcrypt from "https://deno.land/x/bcrypt@v0.4.1/mod.ts";
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
+const JWT_SECRET = Deno.env.get('JWT_SECRET') || 'your-super-secret-jwt-key-change-this-in-production';
+
+serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  try {
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
+
+    const { email, password } = await req.json();
+
+    if (!email || !password) {
+      return new Response(
+        JSON.stringify({ error: 'Email and password are required' }),
+        { 
+          status: 400, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
+    }
+
+    // Fetch admin user from database
+    const { data: adminUser, error: fetchError } = await supabase
+      .from('admin_users')
+      .select('*')
+      .eq('email', email)
+      .single();
+
+    if (fetchError || !adminUser) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid credentials' }),
+        { 
+          status: 401, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
+    }
+
+    // Verify password
+    let passwordValid = false;
+    
+    // Check if user has new hashed password
+    if (adminUser.password_salt && adminUser.password_iterations) {
+      // Use bcrypt for new secure passwords
+      passwordValid = await bcrypt.compare(password, adminUser.password_hash);
+    } else {
+      // Temporary compatibility with old plaintext passwords (remove in production)
+      passwordValid = password === adminUser.password_hash;
+      
+      // If login successful with old password, upgrade to hashed password
+      if (passwordValid) {
+        const salt = await bcrypt.genSalt(12);
+        const hashedPassword = await bcrypt.hash(password, salt);
+        
+        await supabase
+          .from('admin_users')
+          .update({ 
+            password_hash: hashedPassword,
+            password_salt: salt,
+            password_iterations: 12
+          })
+          .eq('id', adminUser.id);
+      }
+    }
+
+    if (!passwordValid) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid credentials' }),
+        { 
+          status: 401, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
+    }
+
+    // Generate secure JWT
+    const key = await crypto.subtle.importKey(
+      "raw",
+      new TextEncoder().encode(JWT_SECRET),
+      { name: "HMAC", hash: "SHA-256" },
+      false,
+      ["sign", "verify"]
+    );
+
+    const payload = {
+      email: adminUser.email,
+      role: 'admin',
+      adminId: adminUser.id,
+      iat: Math.floor(Date.now() / 1000),
+      exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60) // 24 hours
+    };
+
+    const token = await create({ alg: "HS256", typ: "JWT" }, payload, key);
+
+    // Update last login
+    await supabase
+      .from('admin_users')
+      .update({ last_login: new Date().toISOString() })
+      .eq('id', adminUser.id);
+
+    return new Response(
+      JSON.stringify({ 
+        success: true, 
+        token,
+        user: { 
+          email: adminUser.email, 
+          role: 'admin',
+          name: adminUser.name
+        }
+      }),
+      { 
+        status: 200, 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+      }
+    );
+
+  } catch (error) {
+    console.error('Admin auth error:', error);
+    return new Response(
+      JSON.stringify({ error: 'Internal server error' }),
+      { 
+        status: 500, 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+      }
+    );
+  }
+});

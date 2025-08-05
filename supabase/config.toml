@@ -2,3 +2,12 @@ project_id = "xcctxkjwohqillciengv"
 
 [functions.admin-auth]
 verify_jwt = false
+
+[functions.secure-admin-auth]
+verify_jwt = false
+
+[functions.verify-payment]
+verify_jwt = false
+
+[functions.secure-download]
+verify_jwt = false

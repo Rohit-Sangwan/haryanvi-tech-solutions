@@ -22,6 +22,8 @@ export type Database = {
           last_login: string | null
           name: string
           password_hash: string
+          password_iterations: number | null
+          password_salt: string | null
           role: string | null
           updated_at: string
         }
@@ -32,6 +34,8 @@ export type Database = {
           last_login?: string | null
           name: string
           password_hash: string
+          password_iterations?: number | null
+          password_salt?: string | null
           role?: string | null
           updated_at?: string
         }
@@ -42,10 +46,50 @@ export type Database = {
           last_login?: string | null
           name?: string
           password_hash?: string
+          password_iterations?: number | null
+          password_salt?: string | null
           role?: string | null
           updated_at?: string
         }
         Relationships: []
+      }
+      download_tokens: {
+        Row: {
+          created_at: string | null
+          expires_at: string
+          id: string
+          product_id: string
+          token: string
+          used: boolean | null
+          user_email: string
+        }
+        Insert: {
+          created_at?: string | null
+          expires_at?: string
+          id?: string
+          product_id: string
+          token: string
+          used?: boolean | null
+          user_email: string
+        }
+        Update: {
+          created_at?: string | null
+          expires_at?: string
+          id?: string
+          product_id?: string
+          token?: string
+          used?: boolean | null
+          user_email?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "download_tokens_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       orders: {
         Row: {
@@ -105,6 +149,7 @@ export type Database = {
           category: string
           created_at: string
           description: string
+          download_url: string | null
           downloads: number | null
           features: string[] | null
           id: string
@@ -121,6 +166,7 @@ export type Database = {
           category: string
           created_at?: string
           description: string
+          download_url?: string | null
           downloads?: number | null
           features?: string[] | null
           id?: string
@@ -137,6 +183,7 @@ export type Database = {
           category?: string
           created_at?: string
           description?: string
+          download_url?: string | null
           downloads?: number | null
           features?: string[] | null
           id?: string
@@ -151,12 +198,77 @@ export type Database = {
         }
         Relationships: []
       }
+      user_purchases: {
+        Row: {
+          created_at: string
+          download_count: number
+          download_url: string | null
+          id: string
+          is_verified: boolean
+          order_id: string | null
+          product_id: string
+          purchase_date: string
+          updated_at: string
+          user_email: string
+        }
+        Insert: {
+          created_at?: string
+          download_count?: number
+          download_url?: string | null
+          id?: string
+          is_verified?: boolean
+          order_id?: string | null
+          product_id: string
+          purchase_date?: string
+          updated_at?: string
+          user_email: string
+        }
+        Update: {
+          created_at?: string
+          download_count?: number
+          download_url?: string | null
+          id?: string
+          is_verified?: boolean
+          order_id?: string | null
+          product_id?: string
+          purchase_date?: string
+          updated_at?: string
+          user_email?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_purchases_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_purchases_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_download_token: {
+        Args: { p_user_email: string; p_product_id: string }
+        Returns: string
+      }
+      is_admin_user: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      verify_admin_password: {
+        Args: { p_email: string; p_password: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never

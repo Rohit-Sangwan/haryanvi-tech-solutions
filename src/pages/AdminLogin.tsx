@@ -19,7 +19,7 @@ const AdminLogin = () => {
     setLoading(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke('admin-auth', {
+      const { data, error } = await supabase.functions.invoke('secure-admin-auth', {
         body: { 
           email: credentials.username, 
           password: credentials.password 

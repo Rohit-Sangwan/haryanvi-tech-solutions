@@ -19,7 +19,7 @@ import NotFound from "./pages/NotFound";
 import Checkout from "./pages/Checkout";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
-import AdminRoute from "./components/AdminRoute";
+import SecureAdminRoute from "./components/SecureAdminRoute";
 
 import { OrganizationSchema } from "@/components/SEO/OrganizationSchema"; // ✅ Schema import
 
@@ -50,7 +50,11 @@ const App = () => (
             <Route path="/refund-policy" element={<RefundPolicy />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/admin/login" element={<AdminLogin />} />
-            <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+            <Route path="/admin/dashboard" element={
+              <SecureAdminRoute>
+                <AdminDashboard />
+              </SecureAdminRoute>
+            } />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

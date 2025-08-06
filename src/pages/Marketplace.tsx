@@ -198,12 +198,15 @@ const Marketplace = () => {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredProducts.map((product) => (
-              <Card key={product.id} className="h-full hover:shadow-lg transition-all duration-300 hover-scale">
-                <div className="relative">
+              <Card key={product.id} className="h-full hover:shadow-lg transition-all duration-300 hover-scale cursor-pointer">
+                <div className="relative" onClick={() => navigate(`/product/${product.id}`)}>
                   <img
                     src={product.image_url || "/placeholder.svg"}
                     alt={product.title}
                     className="w-full h-48 object-cover rounded-t-lg"
+                    onError={(e) => {
+                      e.currentTarget.src = "/placeholder.svg";
+                    }}
                   />
                   {product.original_price && (
                     <Badge className="absolute top-2 left-2 bg-red-500">
@@ -212,7 +215,7 @@ const Marketplace = () => {
                   )}
                 </div>
                 
-                <CardHeader>
+                <CardHeader className="cursor-pointer" onClick={() => navigate(`/product/${product.id}`)}>
                   <div className="flex justify-between items-start">
                     <CardTitle className="text-lg line-clamp-2">{product.title}</CardTitle>
                     <div className="flex items-center gap-1 text-sm">

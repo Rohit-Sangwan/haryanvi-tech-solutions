@@ -7,6 +7,7 @@ import { CartProvider } from "@/components/CartContext";
 import Index from "./pages/Index";
 import Services from "./pages/Services";
 import Marketplace from "./pages/Marketplace";
+import Product from "./pages/Product";
 import Downloads from "./pages/Downloads";
 import About from "./pages/About";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -40,6 +41,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/services" element={<Services />} />
             <Route path="/marketplace" element={<Marketplace />} />
+            <Route path="/product/:id" element={<Product />} />
             <Route path="/downloads" element={<Downloads />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/about" element={<About />} />

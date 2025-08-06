@@ -63,18 +63,23 @@ serve(async (req) => {
     let passwordValid = false;
     
     try {
+      console.log('Verifying password for user:', adminUser.email);
+      console.log('Password hash starts with $2b$:', adminUser.password_hash?.startsWith('$2b$'));
+      
       // Check if user has bcrypt hashed password
       if (adminUser.password_hash && adminUser.password_hash.startsWith('$2b$')) {
         // Use bcrypt for secure passwords
         passwordValid = await bcrypt.compare(password, adminUser.password_hash);
         console.log('Password verification with bcrypt:', passwordValid);
       } else {
-        // Temporary compatibility with old plaintext passwords
+        // Temporary compatibility with plaintext passwords
         passwordValid = password === adminUser.password_hash;
         console.log('Password verification with plaintext:', passwordValid);
+        console.log('Expected:', adminUser.password_hash, 'Received:', password);
         
-        // If login successful with old password, upgrade to hashed password
+        // If login successful with plaintext password, upgrade to hashed password
         if (passwordValid) {
+          console.log('Upgrading password to bcrypt hash');
           const hashedPassword = await bcrypt.hash(password, 12);
           
           await supabase
@@ -86,7 +91,7 @@ serve(async (req) => {
             })
             .eq('id', adminUser.id);
           
-          console.log('Password upgraded to bcrypt hash');
+          console.log('Password upgraded to bcrypt hash successfully');
         }
       }
     } catch (error) {

@@ -144,6 +144,71 @@ export type Database = {
           },
         ]
       }
+      product_comparisons: {
+        Row: {
+          created_at: string
+          id: string
+          product_ids: string[]
+          user_email: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          product_ids: string[]
+          user_email: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          product_ids?: string[]
+          user_email?: string
+        }
+        Relationships: []
+      }
+      product_reviews: {
+        Row: {
+          created_at: string
+          helpful_count: number | null
+          id: string
+          product_id: string
+          rating: number
+          review_text: string
+          updated_at: string
+          user_email: string | null
+          user_name: string
+        }
+        Insert: {
+          created_at?: string
+          helpful_count?: number | null
+          id?: string
+          product_id: string
+          rating: number
+          review_text: string
+          updated_at?: string
+          user_email?: string | null
+          user_name: string
+        }
+        Update: {
+          created_at?: string
+          helpful_count?: number | null
+          id?: string
+          product_id?: string
+          rating?: number
+          review_text?: string
+          updated_at?: string
+          user_email?: string | null
+          user_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_reviews_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           category: string
@@ -252,6 +317,35 @@ export type Database = {
           },
         ]
       }
+      user_wishlist: {
+        Row: {
+          created_at: string
+          id: string
+          product_id: string
+          user_email: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          product_id: string
+          user_email: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          product_id?: string
+          user_email?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_wishlist_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -260,6 +354,10 @@ export type Database = {
       generate_download_token: {
         Args: { p_user_email: string; p_product_id: string }
         Returns: string
+      }
+      is_admin_or_service_role: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
       }
       is_admin_user: {
         Args: Record<PropertyKey, never>
